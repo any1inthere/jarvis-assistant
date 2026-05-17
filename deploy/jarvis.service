@@ -1,0 +1,18 @@
+[Unit]
+Description=Jarvis Telegram Assistant
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=rigs
+WorkingDirectory=/home/rigs/jarvis-assistant
+Environment=PATH=/home/rigs/jarvis-assistant/venv/bin
+# Do not use EnvironmentFile= for .env — systemd can mishandle long API keys.
+# Python loads .env from config/settings.py instead.
+ExecStart=/home/rigs/jarvis-assistant/venv/bin/python main.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,29 @@
+# Environment and secrets
+.env
+
+# Reminder data and Google token (stored on the Pi only)
+data/
+
+# Google OAuth secrets — never commit
+credentials/*.json
+!credentials/.gitkeep
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.venv/
+env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

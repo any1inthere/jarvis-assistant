@@ -1,0 +1,16 @@
+# Telegram bot framework (job-queue = scheduled reminders)
+python-telegram-bot[job-queue]==21.10
+
+# Load settings from a .env file on your machine
+python-dotenv==1.0.1
+
+# OpenAI API (summaries and understanding your notes)
+openai==1.58.1
+
+# Parse times like "Friday 3pm"
+python-dateutil==2.9.0
+
+# Google Calendar
+google-api-python-client==2.154.0
+google-auth-httplib2==0.2.0
+google-auth-oauthlib==1.2.1
