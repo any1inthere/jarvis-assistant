@@ -25,11 +25,13 @@ async def remind_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         when_text, message = parse_remind_command(
             " ".join(context.args) if context.args else ""
         )
+        raw = " ".join(context.args) if context.args else ""
         reminder = await create_and_schedule(
             context.application,
             update.effective_chat.id,
             when_text,
             message,
+            source=f"/remind {raw}".strip(),
         )
         due = datetime.fromisoformat(reminder.due_at).astimezone(get_timezone())
         await update.message.reply_text(

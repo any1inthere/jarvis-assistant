@@ -66,12 +66,13 @@ async def create_and_schedule(
     chat_id: int,
     when_text: str,
     message: str,
+    source: str = "",
 ) -> Reminder:
     """Parse the time, save the reminder, and schedule it."""
     from services.reminders.parser import parse_when
     from services.reminders.store import add_reminder
 
     due_at = parse_when(when_text)
-    reminder = add_reminder(chat_id, message, due_at)
+    reminder = add_reminder(chat_id, message, due_at, source=source)
     schedule_reminder(application, reminder)
     return reminder

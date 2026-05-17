@@ -27,6 +27,7 @@ class Reminder:
     text: str
     due_at: str  # ISO datetime string
     sent: bool = False
+    source: str = ""  # original Telegram message, if captured
 
 
 def _load_all() -> list[Reminder]:
@@ -53,7 +54,12 @@ def _save_all(reminders: list[Reminder]) -> None:
     logger.info("Saved %s reminders to %s", len(reminders), REMINDERS_FILE)
 
 
-def add_reminder(chat_id: int, text: str, due_at: datetime) -> Reminder:
+def add_reminder(
+    chat_id: int,
+    text: str,
+    due_at: datetime,
+    source: str = "",
+) -> Reminder:
     """Create a new reminder and save it to the file."""
     reminder = Reminder(
         id=str(uuid.uuid4())[:8],
@@ -61,6 +67,7 @@ def add_reminder(chat_id: int, text: str, due_at: datetime) -> Reminder:
         text=text,
         due_at=due_at.isoformat(),
         sent=False,
+        source=source.strip(),
     )
     reminders = _load_all()
     reminders.append(reminder)
@@ -108,6 +115,13 @@ def save_list_context(user_data: dict, items: list[Reminder]) -> None:
 def list_due_unsent() -> list[Reminder]:
     """Return all unsent reminders (used when the bot starts up)."""
     return [item for item in _load_all() if not item.sent]
+
+
+def list_all_reminders() -> list[Reminder]:
+    """Return every reminder, soonest due first (for the web dashboard)."""
+    items = _load_all()
+    items.sort(key=lambda item: item.due_at)
+    return items
 
 
 def delete_reminder(reminder_id: str) -> bool:

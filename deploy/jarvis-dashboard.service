@@ -1,0 +1,17 @@
+[Unit]
+Description=Jarvis Reminder Dashboard (local network)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=rigs
+WorkingDirectory=/home/rigs/jarvis-assistant
+Environment=PATH=/home/rigs/jarvis-assistant/venv/bin
+# Python loads .env from config/settings.py (same as the Telegram bot).
+ExecStart=/home/rigs/jarvis-assistant/venv/bin/python dashboard/app.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

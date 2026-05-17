@@ -16,8 +16,10 @@ rsync -av "$DIR/scripts/" "$PI:~/jarvis-assistant/scripts/"
 # Always push settings.py (rsync sometimes skips it if timestamps match).
 rsync -av "$DIR/config/" "$PI:~/jarvis-assistant/config/"
 scp "$DIR/config/settings.py" "$PI:~/jarvis-assistant/config/settings.py"
+rsync -av "$DIR/dashboard/" "$PI:~/jarvis-assistant/dashboard/"
 rsync -av "$DIR/deploy/" "$PI:~/jarvis-assistant/deploy/"
 rsync -av "$DIR/main.py" "$PI:~/jarvis-assistant/main.py"
+rsync -av "$DIR/requirements.txt" "$PI:~/jarvis-assistant/requirements.txt"
 
 echo ""
 echo "=== Fixing Jarvis on Pi ==="
@@ -28,6 +30,7 @@ pip install -r requirements.txt -q
 echo ""
 echo "=== Update systemd unit (no EnvironmentFile) ==="
 sudo cp deploy/jarvis.service /etc/systemd/system/jarvis.service
+sudo cp deploy/jarvis-dashboard.service /etc/systemd/system/jarvis-dashboard.service
 sudo systemctl daemon-reload
 
 echo ""
@@ -50,9 +53,20 @@ echo ""
 echo "=== Restart Jarvis (only one instance) ==="
 sudo systemctl start jarvis
 sleep 2
-sudo journalctl -u jarvis -n 12 --no-pager
-sleep 2
-sudo systemctl status jarvis --no-pager | head -15
+sudo journalctl -u jarvis -n 8 --no-pager
+
+echo ""
+echo "=== Dashboard (add DASHBOARD_PASSWORD to .env first) ==="
+if grep -q '^DASHBOARD_PASSWORD=.' .env 2>/dev/null; then
+  sudo systemctl enable jarvis-dashboard 2>/dev/null || true
+  sudo systemctl restart jarvis-dashboard
+  sleep 1
+  sudo systemctl status jarvis-dashboard --no-pager | head -8 || true
+  echo "Open from Mac: http://$(hostname -I | awk '{print $1}'):5000"
+else
+  echo "Skip dashboard start — add DASHBOARD_PASSWORD=... to .env then:"
+  echo "  sudo systemctl enable --now jarvis-dashboard"
+fi
 ENDSSH
 
 echo ""
@@ -62,4 +76,4 @@ echo "  nano ~/jarvis-assistant/.env"
 
 echo ""
 echo "=== Done ==="
-echo "Test in Telegram: /reminders  then  /today  then a normal note"
+echo "Test Telegram: /reminders   Dashboard: http://192.168.0.188:5000"

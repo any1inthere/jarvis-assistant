@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Log in — Jarvis{% endblock %}
+{% block content %}
+<section class="card card-narrow">
+  <h2>Log in</h2>
+  {% if password_missing %}
+  <p class="hint error">
+    Add <code>DASHBOARD_PASSWORD</code> to <code>~/jarvis-assistant/.env</code> on the Pi,
+    then restart the dashboard.
+  </p>
+  {% else %}
+  <p class="hint">Local network only. Use the password from your Pi <code>.env</code>.</p>
+  <form method="post" class="form">
+    <label for="password">Password</label>
+    <input type="password" id="password" name="password" required autofocus>
+    <button type="submit">Log in</button>
+  </form>
+  {% endif %}
+</section>
+{% endblock %}

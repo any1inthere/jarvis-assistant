@@ -88,7 +88,11 @@ async def handle_text_message(
     try:
         async def _schedule(when_text: str, task: str):
             return await create_and_schedule(
-                context.application, chat_id, when_text, task
+                context.application,
+                chat_id,
+                when_text,
+                task,
+                source=user_text,
             )
 
         reminder_reply = await handle_reminder_add(

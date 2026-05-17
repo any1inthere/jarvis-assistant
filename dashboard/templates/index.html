@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Reminders — Jarvis{% endblock %}
+{% block content %}
+<section class="card">
+  <div class="toolbar">
+    <h2>All reminders</h2>
+    <p class="hint">{{ reminders|length }} total · same data as Telegram</p>
+  </div>
+
+  {% if not reminders %}
+  <p class="empty">No reminders yet. Set one in Telegram: <code>/remind Friday 3pm | task</code></p>
+  {% else %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Reminder</th>
+          <th>Due</th>
+          <th>Status</th>
+          <th>Original request</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in reminders %}
+        <tr class="{% if r.sent %}row-done{% elif r.status == 'Overdue' %}row-overdue{% endif %}">
+          <td class="text">{{ r.text }}</td>
+          <td>{{ r.due }}</td>
+          <td><span class="badge badge-{{ r.status|lower }}">{{ r.status }}</span></td>
+          <td class="source">{{ r.source }}</td>
+          <td class="actions">
+            {% if not r.sent %}
+            <form method="post" action="{{ url_for('complete_reminder', reminder_id=r.id) }}">
+              <button type="submit" class="btn btn-ok">Complete</button>
+            </form>
+            {% endif %}
+            <form method="post" action="{{ url_for('remove_reminder', reminder_id=r.id) }}"
+                  onsubmit="return confirm('Delete this reminder?');">
+              <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}
